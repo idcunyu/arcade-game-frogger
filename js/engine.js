@@ -27,9 +27,8 @@ var Engine = (function(global) {
 
     /* 这个函数是整个游戏的主入口，负责适当的调用 update / render 函数 */
     function main() {
-        /* 如果你想要更平滑的动画过度就需要获取时间间隙。因为每个人的电脑处理指令的
-         * 速度是不一样的，我们需要一个对每个人都一样的常数（而不管他们的电脑有多快）
-         * 就问你屌不屌！
+        /* 如果你想要更平滑的动画过度就需要获取时间间隙。因为每个人的电脑处理指令的速度是不一样的
+         * 我们需要一个对每个人都一样的常数（而不管他们的电脑有多快）
          */
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
@@ -91,8 +90,8 @@ var Engine = (function(global) {
                 'images/stone-block.png',   // 第一行石头
                 'images/stone-block.png',   // 第二行石头
                 'images/stone-block.png',   // 第三行石头
-                'images/grass-block.png',   // 第一行草地
-                'images/grass-block.png'    // 第二行草地
+                'images/stone-block.png',   // 第四行石头
+                'images/grass-block.png'    // 第一行草地
             ],
             numRows = 6,
             numCols = 5,
@@ -133,7 +132,7 @@ var Engine = (function(global) {
     }
 
     /* 紧接着我们来加载我们知道的需要来绘制我们游戏关卡的图片。然后把 init 方法设置为回调函数。
-     * 那么党这些图片都已经加载完毕的时候游戏就会开始。
+     * 那么当这些图片都已经加载完毕的时候游戏就会开始。
      */
     Resources.load([
         'images/stone-block.png',
