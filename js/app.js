@@ -16,7 +16,7 @@ let verNumEnemy = [83,166,249,332];
 /*
  * 敌人类
  */
-var Enemy = function(x = 0, y = 83 ,speed = 200) {
+var Enemy = function(x = 0, y = 83 ,speed = 1000) {
   // 要应用到每个敌人的实例的变量写在这里
   // 我们已经提供了一个来帮助你实现更多
 
@@ -28,8 +28,6 @@ var Enemy = function(x = 0, y = 83 ,speed = 200) {
   this.y = y;
 
   this.speed = speed;
-
-  this.going=Math.random()*this.speed;
 };
 
 // 在屏幕上显示出敌人
@@ -41,24 +39,37 @@ Enemy.prototype.render = function() {
 // 更新敌人的位置（参数: dt ，表示时间间隙）
 Enemy.prototype.update = function(dt) {
   // 应该给每一次的移动都乘以 dt 参数，以此来保证游戏在所有的电脑上都是以同样的速度运行的
-
-  this.x+=this.going*dt;
-  // console.log(dt);
+  if(this.x<=606){
+    this.x+=Math.round(this.speed*dt);
+  }else{
+    this.x=0;
+    this.y=verNumEnemy[Math.floor((Math.random()*verNumEnemy.length))]-20;
+    this.speed=60+Math.round(Math.random()*100);
+  }
 };
+
+Enemy.prototype.hasCollision = function(){
+  console.log(player.x==this.x&&player.y==this.y);
+  if(player.x==this.x&&player.y==this.y){
+    player.y=415;
+  }
+}
 
 
 /*
  * 玩家类
  */
-var Player = function() {
+var Player = function(x = 202, y = 415) {
   // 玩家的图片或者雪碧图
   this.sprite = 'images/char-boy.png';
+
+  this.x=x;
+  this.y=y;
 };
 
 // 在屏幕上显示出玩家角色
-Player.prototype.render = function(x = 202, y = 415) {
-  ctx.drawImage(Resources.get(this.sprite), x, y-11);
-
+Player.prototype.render = function() {
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y-11);
 };
 
 // 更新玩家的位置（参数: dt ，表示时间间隙）
@@ -68,27 +79,48 @@ Player.prototype.update = function(dt) {
 };
 
 // 通过键盘的方向键输入来控制玩家的移动
-Player.prototype.handleInput = function() {
-
+Player.prototype.handleInput = function(keyNum) {
+  if(keyNum==='left'&&this.x!==0&&this.y>=83){
+    this.x-=101;
+  }else if(keyNum=='up'&&this.y>=83){
+    this.y-=83;
+    // 到达河道，回到初始位置
+    if(this.y<83){
+      setTimeout(function(){
+        console.log("ok");
+        player.x=202;
+        player.y=415;
+      },600);
+    }
+  }else if(keyNum==='right'&&this.x!==404&&this.y>=83){
+    this.x+=101;
+  }else if(keyNum==='down'&&this.y!==415&&this.y>=83){
+    this.y+=83;
+  }
 };
+
+/*
+ * 确认是否碰撞的方法checkCollision
+ */
+Player.prototype.checkCollision = function(){
+  for(enemy in allEnemies){
+    console.log(enemy.x==this.x&&enemy.y==this.y);
+    if(enemy.x==this.x&&enemy.y==this.y){
+      this.y=415;
+    }
+  }
+}
 
 
 /*
- * 现在实例化所需要的所有对象。
- * 把所有敌人的对象都放进一个叫 allEnemies 的数组里面，
- * 把玩家对象放进一个叫 player 的变量里面。
+ * 实例化所需要的所有对象
  */
-// var e1 = new Enemy(0, verNumEnemy[Math.floor((Math.random()*verNumEnemy.length))]-20,Math.random()*500);
-// var e2 = new Enemy(0, verNumEnemy[Math.floor((Math.random()*verNumEnemy.length))]-20,Math.random()*500);
-// var e3 = new Enemy(0, verNumEnemy[Math.floor((Math.random()*verNumEnemy.length))]-20,Math.random()*500);
-// var e4 = new Enemy(0, verNumEnemy[Math.floor((Math.random()*verNumEnemy.length))]-20,Math.random()*500);
-// var e5 = new Enemy(0, verNumEnemy[Math.floor((Math.random()*verNumEnemy.length))]-20,Math.random()*500);
-// var e6 = new Enemy(0, verNumEnemy[Math.floor((Math.random()*verNumEnemy.length))]-20,Math.random()*500);
-// var e7 = new Enemy(0, verNumEnemy[Math.floor((Math.random()*verNumEnemy.length))]-20,Math.random()*500);
-// var e8 = new Enemy(0, verNumEnemy[Math.floor((Math.random()*verNumEnemy.length))]-20,Math.random()*500);
-// var allEnemies = [e1, e2, e3,e4,e5,e6,e7,e8];
+// 把所有敌人的对象都放进一个叫 allEnemies 的数组里面
 var allEnemies = [];
-allEnemies.push(new Enemy(0, verNumEnemy[Math.floor((Math.random()*verNumEnemy.length))]-20,Math.random()*500));
+for(let i=0;i<5;i++){
+  allEnemies.push(new Enemy(0, verNumEnemy[Math.floor((Math.random()*verNumEnemy.length))]-20,60+Math.random()*100));
+}
+// 把玩家对象放进一个叫 player 的变量里面
 var player = new Player();
 
 /*
@@ -105,4 +137,5 @@ document.addEventListener('keyup', function(e) {
   };
 
   player.handleInput(allowedKeys[e.keyCode]);
+
 });
