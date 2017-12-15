@@ -48,13 +48,6 @@ Enemy.prototype.update = function(dt) {
   }
 };
 
-Enemy.prototype.hasCollision = function(){
-  console.log(player.x==this.x&&player.y==this.y);
-  if(player.x==this.x&&player.y==this.y){
-    player.y=415;
-  }
-}
-
 
 /*
  * 玩家类
@@ -102,14 +95,19 @@ Player.prototype.handleInput = function(keyNum) {
 /*
  * 确认是否碰撞的方法checkCollision
  */
-Player.prototype.checkCollision = function(){
-  for(enemy in allEnemies){
-    console.log(enemy.x==this.x&&enemy.y==this.y);
-    if(enemy.x==this.x&&enemy.y==this.y){
-      this.y=415;
-    }
-  }
-}
+ Player.prototype.checkCollisions=function() {
+   for(let i=0;i<allEnemies.length;i++){
+     if(Math.round(this.y-allEnemies[i].y)<40&&Math.round(this.y-allEnemies[i].y>0)){
+       console.log("yes1");
+       if(Math.round(this.x-allEnemies[i].x)<-50&&Math.round(this.x-allEnemies[i].x)>-155){
+         console.log('yes2');
+         setTimeout(function(){
+           player.y=415;
+         },80);
+       }
+     }
+   }
+ }
 
 
 /*
@@ -122,6 +120,9 @@ for(let i=0;i<5;i++){
 }
 // 把玩家对象放进一个叫 player 的变量里面
 var player = new Player();
+
+
+
 
 /*
  * 这段代码监听游戏玩家的键盘点击事件，

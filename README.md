@@ -7,5 +7,8 @@ Udacity前端进阶纳米学位，项目2，街机游戏克隆项目
 ## <i class="icon-list"></i> 本页索引
 
 * [快速游戏](#快速游戏)
+
+[记忆游戏（点击进入游戏页面）](https://sansregret.github.io/udacity/project-two/index)
+
 * [游戏介绍](#游戏介绍)
 * [得分规则](#得分规则)
