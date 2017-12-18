@@ -1,4 +1,28 @@
 /*
+ *封装的方法
+ */
+// addClass-添加类
+function addClass(ele, cls) {
+  if (!ele.className.includes(cls)) {
+    ele.className = ele.className == ''
+      ? cls
+      : ele.className + ' ' + cls;
+  }
+}
+// removeClass-移除类
+function removeClass(ele, cls) {
+  if (ele.className.includes(cls)) {
+    let thisClassName = ele.className.split('');
+    if (ele.className.indexOf(cls) != 0) {
+      thisClassName.splice(ele.className.indexOf(cls) - 1, cls.length + 1);
+    } else {
+      thisClassName.splice(ele.className.indexOf(cls), cls.length);
+    }
+    ele.className = thisClassName.join('');
+  }
+}
+
+/*
  * 对于**玩家角色**：
  * 设定画布中横向每一格101px,竖向每一格83px。
  * 横向从左至右：0、101、202、303、404。——>x+0
@@ -12,6 +36,9 @@
 let horNum = [0,101,202,303,404];
 let verNum = [0,83,166,249,332,415];
 let verNumEnemy = [83,166,249,332];
+
+const victory = document.getElementsByClassName('victory');
+const playAgain = document.getElementsByClassName('play-again');
 
 /*
  * 敌人类
@@ -73,21 +100,31 @@ Player.prototype.update = function(dt) {
 
 // 通过键盘的方向键输入来控制玩家的移动
 Player.prototype.handleInput = function(keyNum) {
-  if(keyNum==='left'&&this.x!==0&&this.y>=83){
+  if(keyNum==='left'||keyNum==='A'&&this.x!==0&&this.y>=83){
     this.x-=101;
-  }else if(keyNum=='up'&&this.y>=83){
+  }else if(keyNum=='up'||keyNum==='W'&&this.y>=83){
     this.y-=83;
     // 到达河道，回到初始位置
     if(this.y<83){
-      setTimeout(function(){
-        console.log("ok");
-        player.x=202;
-        player.y=415;
-      },600);
+      victory[0].style.top = "300px";
+      addClass(victory[0],'finalShowUI');
+      allEnemies.splice(0,allEnemies.length);
+      playAgain[0].onclick=function(){
+        removeClass(victory[0],'finalShowUI');
+        addClass(victory[0],'finalShowOutUI');
+        setTimeout(function() {
+          removeClass(victory[0],'finalShowOutUI');
+          victory[0].style.top = "-2000px";
+          addEnemies(5);
+          player.x=202;
+          player.y=415;
+        }, 1000);
+
+      }
     }
-  }else if(keyNum==='right'&&this.x!==404&&this.y>=83){
+  }else if(keyNum==='right'||keyNum==='D'&&this.x!==404&&this.y>=83){
     this.x+=101;
-  }else if(keyNum==='down'&&this.y!==415&&this.y>=83){
+  }else if(keyNum==='down'||keyNum==='S'&&this.y!==415&&this.y>=83){
     this.y+=83;
   }
 };
@@ -98,9 +135,7 @@ Player.prototype.handleInput = function(keyNum) {
  Player.prototype.checkCollisions=function() {
    for(let i=0;i<allEnemies.length;i++){
      if(Math.round(this.y-allEnemies[i].y)<40&&Math.round(this.y-allEnemies[i].y>0)){
-       console.log("yes1");
        if(Math.round(this.x-allEnemies[i].x)<-50&&Math.round(this.x-allEnemies[i].x)>-155){
-         console.log('yes2');
          setTimeout(function(){
            player.y=415;
          },80);
@@ -115,9 +150,14 @@ Player.prototype.handleInput = function(keyNum) {
  */
 // 把所有敌人的对象都放进一个叫 allEnemies 的数组里面
 var allEnemies = [];
-for(let i=0;i<5;i++){
-  allEnemies.push(new Enemy(0, verNumEnemy[Math.floor((Math.random()*verNumEnemy.length))]-20,60+Math.random()*100));
+// 向allEnemies数组中添加敌人，enemyNum是敌人数量（此处我设为5）
+function addEnemies(enemyNum){
+  for(let i=0;i<enemyNum;i++){
+    allEnemies.push(new Enemy(0, verNumEnemy[Math.floor((Math.random()*verNumEnemy.length))]-20,60+Math.random()*100));
+  }
 }
+
+addEnemies(5);
 // 把玩家对象放进一个叫 player 的变量里面
 var player = new Player();
 
@@ -134,7 +174,11 @@ document.addEventListener('keyup', function(e) {
     37: 'left',
     38: 'up',
     39: 'right',
-    40: 'down'
+    40: 'down',
+    65: 'A',
+    87: 'W',
+    68: 'D',
+    83: 'S'
   };
 
   player.handleInput(allowedKeys[e.keyCode]);
